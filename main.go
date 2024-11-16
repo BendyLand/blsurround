@@ -38,6 +38,7 @@ func main() {
 	fmt.Println("New text saved to clipboard!")
 }
 
+//todo: try replacing this with a global var (not a constant this time)
 func getDoubleSidedTokens() map[string]string {
 	doubleSidedTokens := map[string]string{
 		"(": ")",
@@ -94,6 +95,7 @@ func printUsage() {
 	)
 }
 
+//todo: add 'full' parameter to include/exclude the beginning part, then replace printUsage
 func printHelpMenu() {
 	fmt.Println("Bland Surround Tool will read the system clipboard and apply the given token on either side.")
 	fmt.Println("\nFor example, if 'test' is saved to the system clipboard, running:\n`blsurround \\(`\nWill produce:\n'(test)'")
@@ -106,6 +108,7 @@ func printHelpMenu() {
 	)
 }
 
+//todo: abstract each case into its own function
 func handleArgs(args []string, text string) error {
 	if len(args) > 1 {
 		switch args[1] {

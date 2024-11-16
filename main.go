@@ -13,39 +13,22 @@ func main() {
 		fmt.Println("Error reading clipboard:", err)
 		return
 	}
-	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "-h", "--help":
-			printHelp()
-			return
+	err = handleArgs(os.Args, text)
+	if err != nil {
+		switch err.Error() {
+		case "-h", "-p":
+			{
+			} // do nothing
+		default:
+			printUsage()
+			fmt.Printf("%s\n\n", err)
 		}
-		if len(os.Args) > 2 {
-			switch os.Args[2] {
-			case "-h", "--help":
-				printHelp()
-				return
-			case "-p", "--print":
-				text, err = createNewToken(text, os.Args)
-				if err != nil {
-					fmt.Println("Error creating token:", err)
-					return
-				}
-				fmt.Println(text)
-				return
-			case "-v", "--verbose":
-				fmt.Printf("Original text:\n%s\n\n", text)
-				text, err = createNewToken(text, os.Args)
-				if err != nil {
-					fmt.Println("Error creating token:", err)
-					return
-				}
-				fmt.Printf("New text:\n%s\n\n", text)
-			}
-		}
+		return
 	}
 	text, err = createNewToken(text, os.Args)
 	if err != nil {
-		fmt.Println("Error creating token:", err)
+		fmt.Printf("Error creating token: %s\n", err)
+		printUsage()
 		return
 	}
 	err = clipboard.WriteAll(text)
@@ -87,7 +70,6 @@ func createNewToken(original string, args []string) (string, error) {
 		token := args[1]
 		token2 := token
 		if token[0] == '-' {
-			printHelp()
 			err := fmt.Errorf("Improper order of arguments.\n")
 			return original, err
 		}
@@ -98,12 +80,67 @@ func createNewToken(original string, args []string) (string, error) {
 		original = strings.Trim(original, " \t\n")
 		result = fmt.Sprintf("%s%s%s", token, original, token2)
 	default:
-		printHelp()
+		printUsage()
 	}
 	return result, nil
 }
 
-func printHelp() {
+func printUsage() {
 	fmt.Println("Usage:\nblsurround <surround token>")
-	fmt.Printf("\nFlags:\n-h or --help : Show this menu\n-p or --print : print the result to the console instead of saving it back to the clipboard.\n\n")
+	fmt.Printf(
+		"\nFlags:" +
+			"\n-h or --help    : Show this menu." +
+			"\n-p or --print   : Print the result to the console instead of saving it back to the clipboard." +
+			"\n-v or --verbose : Print the original text, print the new text, and save the new text to the clipboard.\n\n",
+	)
+}
+
+func printHelpMenu() {
+	fmt.Println("Bland Surround Tool will read the system clipboard and apply the given token on either side.")
+	fmt.Println("\nFor example, if 'test' is saved to the system clipboard, running:\n`blsurround \\(`\nWill produce:\n'(test)'")
+	fmt.Println("\nUsage:\nblsurround <surround token>")
+	fmt.Printf(
+		"\nFlags:" +
+			"\n-h or --help    : Show this menu." +
+			"\n-p or --print   : Print the result to the console instead of saving it back to the clipboard." +
+			"\n-v or --verbose : Print the original text, print the new text, and save the new text to the clipboard.\n\n",
+	)
+
+}
+
+func handleArgs(args []string, text string) error {
+	if len(args) > 1 {
+		switch args[1] {
+		case "-h", "--help":
+			printHelpMenu()
+			err := fmt.Errorf("-h")
+			return err
+		}
+		if len(args) > 2 {
+			switch args[2] {
+			case "-h", "--help":
+				printHelpMenu()
+				err := fmt.Errorf("-h")
+				return err
+			case "-p", "--print":
+				text, err := createNewToken(text, os.Args)
+				if err != nil {
+					message := fmt.Errorf("Error creating token: %s\n", err)
+					return message
+				}
+				fmt.Println(text)
+				message := fmt.Errorf("-p")
+				return message
+			case "-v", "--verbose":
+				fmt.Printf("Original text:\n%s\n\n", text)
+				text, err := createNewToken(text, os.Args)
+				if err != nil {
+					message := fmt.Errorf("Error creating token: %s\n", err)
+					return message
+				}
+				fmt.Printf("New text:\n%s\n\n", text)
+			}
+		}
+	}
+	return nil
 }

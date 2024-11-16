@@ -1,4 +1,4 @@
-# Bland Surround
+# Bland Surround Tool
 
 A simple text surround tool written in Go!
 

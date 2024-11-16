@@ -17,11 +17,10 @@ func main() {
 	if err != nil {
 		switch err.Error() {
 		case "-h", "-p":
-			{
-			} // do nothing
+			// do nothing
 		default:
+			fmt.Printf("Error handling arguments: %s\n", err)
 			printUsage()
-			fmt.Printf("%s\n\n", err)
 		}
 		return
 	}
@@ -36,7 +35,7 @@ func main() {
 		fmt.Println("Error writing to clipboard:", err)
 		return
 	}
-	fmt.Println("New string saved to clipboard!")
+	fmt.Println("New text saved to clipboard!")
 }
 
 func getDoubleSidedTokens() map[string]string {
@@ -86,7 +85,7 @@ func createNewToken(original string, args []string) (string, error) {
 }
 
 func printUsage() {
-	fmt.Println("Usage:\nblsurround <surround token>")
+	fmt.Println("Usage:\nblsurround <surround token> <optional flags>")
 	fmt.Printf(
 		"\nFlags:" +
 			"\n-h or --help    : Show this menu." +
@@ -98,14 +97,13 @@ func printUsage() {
 func printHelpMenu() {
 	fmt.Println("Bland Surround Tool will read the system clipboard and apply the given token on either side.")
 	fmt.Println("\nFor example, if 'test' is saved to the system clipboard, running:\n`blsurround \\(`\nWill produce:\n'(test)'")
-	fmt.Println("\nUsage:\nblsurround <surround token>")
+	fmt.Println("\nUsage:\nblsurround <surround token> <optional flags>")
 	fmt.Printf(
 		"\nFlags:" +
 			"\n-h or --help    : Show this menu." +
 			"\n-p or --print   : Print the result to the console instead of saving it back to the clipboard." +
 			"\n-v or --verbose : Print the original text, print the new text, and save the new text to the clipboard.\n\n",
 	)
-
 }
 
 func handleArgs(args []string, text string) error {
@@ -141,6 +139,9 @@ func handleArgs(args []string, text string) error {
 				fmt.Printf("New text:\n%s\n\n", text)
 			}
 		}
+	} else {
+		err := fmt.Errorf("Not enough arguments.\n")
+		return err
 	}
 	return nil
 }

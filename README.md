@@ -14,4 +14,4 @@ blsurround \"
 ## Future Plans
 
  - Add flag to ignore opening/closing pairs and surround with the same token.
-     - e.g. `echo "test" | pbcopy | "blsurround \{` -> {test{
+     - e.g. `echo "test" | pbcopy | `blsurround \{ --nomatch` -> {test{
